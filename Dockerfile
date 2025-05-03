@@ -1,14 +1,16 @@
 FROM ghcr.io/graalvm/native-image-community:21-ol9 AS graalvm
+
+RUN dnf install -y findutils
 WORKDIR /home/app
+ENV GRADLE_USER_HOME=/home/app/.gradle
 
-COPY build.gradle gradle.properties settings.gradle gradlew /home/app
-COPY src /home/app
+COPY build.gradle gradle.properties settings.gradle gradlew /home/app/
+COPY src /home/app/src
 
+RUN chmod +x gradlew
 RUN ./gradlew nativeImage
 
-FROM gcr.io/distroless/base:latest
+FROM cgr.dev/chainguard/wolfi-base:latest
 EXPOSE 8080
 COPY --link --from=graalvm /home/app/application /app/application
 ENTRYPOINT ["/app/application"]
-
-
