@@ -1,0 +1,82 @@
+package site.hayond.service;
+
+import io.micronaut.http.*;
+import io.micronaut.http.client.HttpClient;
+import io.micronaut.http.cookie.Cookie;
+import jakarta.inject.Singleton;
+import reactor.core.publisher.Mono;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.reactivestreams.Publisher;
+
+@Singleton
+public class ForwardProxyService {
+
+    private final HttpClient httpClient;
+    private final ForwardProxyConfig config;
+
+    public ForwardProxyService(HttpClient httpClient, ForwardProxyConfig config) {
+        this.httpClient = httpClient;
+        this.config = config;
+    }
+
+    public ForwardTarget resolveTarget(HttpRequest<?> request, boolean clear) {
+        String portQuery = request.getParameters().get(config.getPortQuery());
+        String hostQuery = request.getParameters().get(config.getHostQuery());
+        String query = hostQuery != null ? hostQuery : portQuery;
+        String cookie = clear ? null
+                : request.getCookies().findCookie(config.getCookie())
+                        .map(Cookie::getValue).orElse(null);
+        int defaultPort = config.getDefaultPort();
+
+        if (query != null && !query.isEmpty()) {
+            if (portQuery != null && !portQuery.isEmpty()) {
+                return new ForwardTarget(query, portQuery);
+            }
+            return new ForwardTarget(query, defaultPort);
+        } else if (portQuery != null && !portQuery.isEmpty()) {
+            return new ForwardTarget(portQuery, defaultPort);
+        } else if (cookie != null && !cookie.isEmpty()) {
+            return new ForwardTarget(cookie, defaultPort);
+        }
+        return new ForwardTarget("", defaultPort);
+    }
+
+    public Cookie createHostForwardCookie(ForwardTarget target, boolean clear) {
+        if (clear) {
+            return Cookie.of(config.getCookie(), "");
+        }
+        return Cookie.of(config.getCookie(), target.getUrl());
+    }
+
+    public Publisher<Map<String, Object>> buildDebugInfo(HttpRequest<?> request, ForwardTarget target) {
+        return Mono.from(buildTargetInfo(target))
+                .map(targetInfo -> {
+                    Map<String, Object> debugInfo = new HashMap<>();
+                    debugInfo.put("target", targetInfo);
+                    debugInfo.put("config", config);
+                    return debugInfo;
+                });
+    }
+
+    public Publisher<Map<String, Object>> buildTargetInfo(ForwardTarget target) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("host", target.getUrl());
+        HttpRequest<?> probeRequest = HttpRequest.HEAD(target.getUri());
+        return Mono.from(httpClient.exchange(probeRequest))
+                .map(response -> {
+                    int statusCode = response.getStatus().getCode();
+                    result.put("reachable", statusCode < 500);
+                    result.put("statusCode", statusCode);
+                    return result;
+                })
+                .onErrorResume(e -> {
+                    result.put("reachable", false);
+                    result.put("statusCode", 500);
+                    result.put("error", e.getMessage());
+                    return Mono.just(result);
+                });
+    }
+}
