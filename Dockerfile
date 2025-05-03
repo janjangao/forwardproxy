@@ -1,4 +1,4 @@
-FROM ghcr.io/graalvm/graalvm-ce:21 AS graalvm
+FROM ghcr.io/graalvm/graalvm-community:21 AS graalvm
 WORKDIR /home/app
 
 COPY build.gradle gradle.properties settings.gradle gradlew /home/app/
