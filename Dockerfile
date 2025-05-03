@@ -6,7 +6,7 @@ COPY gradle /home/app/gradle
 COPY src /home/app/src
 
 RUN chmod +x gradlew
-RUN ./gradlew nativeImage
+RUN ./gradlew nativeCompile
 
 FROM cgr.dev/chainguard/wolfi-base:latest
 EXPOSE 8080
