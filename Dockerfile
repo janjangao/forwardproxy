@@ -1,4 +1,4 @@
-FROM ghcr.io/graalvm/native-image-community:21 AS graalvm
+FROM ghcr.io/graalvm/native-image-community AS graalvm
 WORKDIR /home/app
 
 COPY build.gradle gradle.properties settings.gradle gradlew /home/app
