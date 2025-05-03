@@ -10,5 +10,5 @@ RUN ./gradlew nativeCompile
 
 FROM cgr.dev/chainguard/wolfi-base:latest
 EXPOSE 8080
-COPY --link --from=graalvm /home/app/application /app/application
+COPY --link --from=graalvm /home/app/build/native/nativeCompile/application /app/application
 ENTRYPOINT ["/app/application"]

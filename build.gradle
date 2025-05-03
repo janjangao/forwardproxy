@@ -60,4 +60,11 @@ tasks.named("dockerfileNative") {
     jdkVersion = "21"
 }
 
+graalvmNative {
+    binaries {
+        main {
+            imageName.set('application')
+        }
+    }
+}
 
