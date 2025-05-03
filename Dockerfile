@@ -1,6 +1,5 @@
 FROM ghcr.io/graalvm/graalvm-ce:21 AS graalvm
 WORKDIR /home/app
-ENV GRADLE_USER_HOME=/home/app/.gradle
 
 COPY build.gradle gradle.properties settings.gradle gradle gradlew /home/app/
 COPY src /home/app/src
