@@ -1,6 +1,4 @@
-FROM ghcr.io/graalvm/native-image-community:21-ol9 AS graalvm
-
-RUN dnf install -y findutils
+FROM ghcr.io/graalvm/graalvm-ce:21 AS graalvm
 WORKDIR /home/app
 ENV GRADLE_USER_HOME=/home/app/.gradle
 
