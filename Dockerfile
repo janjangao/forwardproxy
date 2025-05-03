@@ -1,7 +1,8 @@
 FROM ghcr.io/graalvm/graalvm-ce:21 AS graalvm
 WORKDIR /home/app
 
-COPY build.gradle gradle.properties settings.gradle gradle gradlew /home/app/
+COPY build.gradle gradle.properties settings.gradle gradlew /home/app/
+COPY gradle /home/app/gradle
 COPY src /home/app/src
 
 RUN chmod +x gradlew
