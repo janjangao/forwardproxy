@@ -44,8 +44,8 @@ micronaut {
     aot {
         // Please review carefully the optimizations enabled below
         // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
-        optimizeServiceLoading = false
-        convertYamlToJava = false
+        optimizeServiceLoading = true
+        convertYamlToJava = true
         precomputeOperations = true
         cacheEnvironment = true
         optimizeClassLoading = true
