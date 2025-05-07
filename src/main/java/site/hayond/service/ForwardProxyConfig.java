@@ -6,10 +6,19 @@ import io.micronaut.context.annotation.ConfigurationProperties;
 @Serdeable
 @ConfigurationProperties("port.forward")
 public class ForwardProxyConfig {
+    private String defaultHost = "localhost";
     private int defaultPort = 80;
     private String portQuery = "port";
     private String hostQuery = "host";
     private String cookie = "forward-proxy";
+
+    public String getDefaultHost() {
+        return defaultHost;
+    }
+
+    public void setDefaultHost(String defaultHost) {
+        this.defaultHost = defaultHost;
+    }
 
     public int getDefaultPort() {
         return defaultPort;

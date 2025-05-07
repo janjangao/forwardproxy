@@ -22,13 +22,13 @@ public class ForwardProxyService {
         this.config = config;
     }
 
-    public ForwardTarget resolveTarget(HttpRequest<?> request, boolean clear) {
+    public ForwardTarget resolveTarget(HttpRequest<?> request) {
         String portQuery = request.getParameters().get(config.getPortQuery());
         String hostQuery = request.getParameters().get(config.getHostQuery());
         String query = hostQuery != null ? hostQuery : portQuery;
-        String cookie = clear ? null
-                : request.getCookies().findCookie(config.getCookie())
-                        .map(Cookie::getValue).orElse(null);
+        String cookie = request.getCookies().findCookie(config.getCookie())
+                .map(Cookie::getValue).orElse(null);
+        String defaultHost = config.getDefaultHost();
         int defaultPort = config.getDefaultPort();
 
         if (query != null && !query.isEmpty()) {
@@ -41,17 +41,21 @@ public class ForwardProxyService {
         } else if (cookie != null && !cookie.isEmpty()) {
             return new ForwardTarget(cookie, defaultPort);
         }
-        return new ForwardTarget("", defaultPort);
+        return new ForwardTarget(defaultHost, defaultPort);
     }
 
     public Cookie createHostForwardCookie(ForwardTarget target, boolean clear) {
-        if (clear) {
-            return Cookie.of(config.getCookie(), "");
-        }
-        return Cookie.of(config.getCookie(), target.getUrl());
+        String value = clear ? "" : target.getUrl();
+        Cookie cookie = Cookie.of(config.getCookie(), value);
+        cookie.path("/");
+        cookie.httpOnly(true);
+        cookie.maxAge(7200000);
+        if (clear)
+            cookie.maxAge(0);
+        return cookie;
     }
 
-    public Publisher<Map<String, Object>> buildDebugInfo(HttpRequest<?> request, ForwardTarget target) {
+    public Publisher<Map<String, Object>> buildDebugInfo(ForwardTarget target) {
         return Mono.from(buildTargetInfo(target))
                 .map(targetInfo -> {
                     Map<String, Object> debugInfo = new HashMap<>();
@@ -74,7 +78,6 @@ public class ForwardProxyService {
                 })
                 .onErrorResume(e -> {
                     result.put("reachable", false);
-                    result.put("statusCode", 500);
                     result.put("error", e.getMessage());
                     return Mono.just(result);
                 });
