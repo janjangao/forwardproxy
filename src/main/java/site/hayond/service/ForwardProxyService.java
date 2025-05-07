@@ -6,6 +6,7 @@ import io.micronaut.http.cookie.Cookie;
 import jakarta.inject.Singleton;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public class ForwardProxyService {
         Cookie cookie = Cookie.of(config.getCookie(), value);
         cookie.path("/");
         cookie.httpOnly(true);
-        cookie.maxAge(7200000);
+        cookie.maxAge(Duration.ofDays(30));
         if (clear)
             cookie.maxAge(0);
         return cookie;
