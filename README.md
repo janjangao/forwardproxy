@@ -36,7 +36,7 @@ For example, you have a portainer deployed on localhost:9000, try access `http:/
 `https://{yourdomain}?port=9000`
 
 ### Issue
-If Tailscale is running in docker, need specific `network_mode: host`
+If Tailscale is running in docker, need specify `network_mode: host`
 
 ## Query
 
