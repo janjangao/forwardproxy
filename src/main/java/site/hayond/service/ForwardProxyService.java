@@ -33,12 +33,9 @@ public class ForwardProxyService {
         int defaultPort = config.getDefaultPort();
 
         if (query != null && !query.isEmpty()) {
-            if (portQuery != null && !portQuery.isEmpty()) {
-                return new ForwardTarget(query, portQuery);
-            }
-            return new ForwardTarget(query, defaultPort);
-        } else if (portQuery != null && !portQuery.isEmpty()) {
-            return new ForwardTarget(portQuery, defaultPort);
+            string finalHost = hostQuery != null && !hostQuery.isEmpty() ? hostQuery : defaultHost;
+            string finalPort = portQuery != null && !portQuery.isEmpty() ? portQuery : String.valueOf(defaultPort);
+            return new ForwardTarget(finalHost, finalPort);
         } else if (cookie != null && !cookie.isEmpty()) {
             return new ForwardTarget(cookie, defaultPort);
         }
