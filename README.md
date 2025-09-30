@@ -8,9 +8,7 @@
 DockerHub: [janjangao/forwardproxy](https://hub.docker.com/r/janjangao/forwardproxy)
 
 ```
-# 8888 is server port
-
-docker run -p 8080:8080 --restart unless-stopped -d --name forwardproxy janjangao/forwardproxy
+docker run --network=host --restart unless-stopped -d --name forwardproxy janjangao/forwardproxy
 ```
 docker compose
 ```
@@ -18,10 +16,15 @@ services:
   forwardproxy:
     image: janjangao/forwardproxy
     container_name: forwardproxy
-    platform: linux/amd64
-    ports:
-      - "8080:8080"
+    network_mode: host
     restart: unless-stopped
+```
+
+### Run without host network mode.
+By right, container can not access host `localhost` network, so we need run with `--network=host`, but container has a bidge IP `172.17.0.1` can access host, so can assign it as default host by env variable.
+```
+# 8888 is server port
+docker run -p 8080:8080 -e PORT_FORWARD_DEFAULT_HOST=172.17.0.1 --restart unless-stopped -d --name forwardproxy janjangao/forwardproxy
 ```
 
 ### Tailscale Funnel on forwardproxy
@@ -35,8 +38,8 @@ For example, you have a portainer deployed on localhost:9000, try access `http:/
 ### Access Tailscale domain
 `https://{yourdomain}?port=9000`
 
-### Issue
-If Tailscale is running in docker, need specify `network_mode: host`
+### Tailscale in docker
+It has same host network accessbility problem(container can't access host `localhost`), tailscale needs run with `--network=host` as well.
 
 ## Query
 
@@ -60,4 +63,4 @@ Server port, value: 8080
 Default forward port if don't have any query, value: 80
 
 ### PORT_FORWARD_DEFAULT_HOST
-Default forward host if don't any query, value: 172.17.0.1(docker bridge IP)
+Default forward host if don't any query, value: localhost
