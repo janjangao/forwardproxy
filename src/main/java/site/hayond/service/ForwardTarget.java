@@ -57,7 +57,7 @@ public class ForwardTarget {
         } else if (target.matches("\\d+")) {
             url = LOCAL_HOST + ":" + target;
         } else {
-            url = target;
+            url = target + ":" + port;
         }
 
         if (!url.matches("^[a-zA-Z][a-zA-Z0-9+.-]*://.*")) {
@@ -82,7 +82,7 @@ public class ForwardTarget {
 
             return new URI(scheme, null, host, uriPort, null, null, null);
         } catch (Exception e) {
-            String fallbackUrl = SCHEME_HTTP + "://" + DEFAULT_HOST + (port == PORT_HTTP ? "" : ":" + port);
+            String fallbackUrl = DEFAULT_HOST + (port == PORT_HTTP ? "" : ":" + port);
             return URI.create(fallbackUrl);
         }
     }
