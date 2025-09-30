@@ -12,6 +12,17 @@ DockerHub: [janjangao/forwardproxy](https://hub.docker.com/r/janjangao/forwardpr
 
 docker run -p 8080:8080 --restart unless-stopped -d --name forwardproxy janjangao/forwardproxy
 ```
+docker compose
+```
+services:
+  forwardproxy:
+    image: janjangao/forwardproxy
+    container_name: forwardproxy
+    platform: linux/amd64
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+```
 
 ### Tailscale Funnel on forwardproxy
 ```
