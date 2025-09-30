@@ -60,4 +60,4 @@ Server port, value: 8080
 Default forward port if don't have any query, value: 80
 
 ### PORT_FORWARD_DEFAULT_HOST
-Default forward host if don't any query, value: 172.17.0.1
+Default forward host if don't any query, value: 172.17.0.1(docker bridge IP)
