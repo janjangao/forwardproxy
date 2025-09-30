@@ -15,7 +15,7 @@ docker run -p 8080:8080 --restart unless-stopped -d --name forwardproxy janjanga
 
 ### Tailscale Funnel on forwardproxy
 ```
-tailscale funnel 8080
+tailscale funnel --bg 8080
 ```
 
 ### Test locally
