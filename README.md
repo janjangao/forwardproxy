@@ -20,13 +20,6 @@ services:
     restart: unless-stopped
 ```
 
-### Run without host network mode.
-By right, container can not access host `localhost` network, so we need run with `--network=host`, but container has a bidge IP `172.17.0.1` can access host, so can assign it as default host by env variable.
-```
-# 8888 is server port
-docker run -p 8080:8080 -e PORT_FORWARD_DEFAULT_HOST=172.17.0.1 --restart unless-stopped -d --name forwardproxy janjangao/forwardproxy
-```
-
 ### Tailscale Funnel on forwardproxy
 ```
 tailscale funnel --bg 8080
@@ -37,6 +30,14 @@ For example, you have a portainer deployed on localhost:9000, try access `http:/
 
 ### Access Tailscale domain
 `https://{yourdomain}?port=9000`
+
+### Run without host network mode.
+By right, container can not access host `localhost` network, so we need run with `--network=host`, but container has a bidge IP `172.17.0.1` can access host, so can assign it as default host by env variable.
+But with this way, you only can access with current host services by port, host parameter shall not be supported. if you are looking for a way to use other service on intranet, for example: `https://{yourdomain}?host=192.168.1.7:5244`, it still need run with `network=host` mode.
+```
+# 8888 is server port
+docker run -p 8080:8080 -e PORT_FORWARD_DEFAULT_HOST=172.17.0.1 --restart unless-stopped -d --name forwardproxy janjangao/forwardproxy
+```
 
 ### Tailscale in docker
 It has same host network accessbility problem(container can't access host `localhost`), tailscale needs run with `--network=host` as well.
