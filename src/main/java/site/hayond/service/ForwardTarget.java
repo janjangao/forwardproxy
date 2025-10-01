@@ -56,8 +56,10 @@ public class ForwardTarget {
             url = port == PORT_HTTP ? DEFAULT_HOST : DEFAULT_HOST + ":" + port;
         } else if (target.matches("\\d+")) {
             url = LOCAL_HOST + ":" + target;
-        } else {
+        } else if (target.matches(".*:\\d+$")) {
             url = target;
+        } else if () {
+            url = target + ":" + port;
         }
 
         if (!url.matches("^[a-zA-Z][a-zA-Z0-9+.-]*://.*")) {
